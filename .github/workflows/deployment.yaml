@@ -1,0 +1,63 @@
+name: NFL STATS API CI/CD
+on: [push]
+env:
+  MAVEN_CLI_OPTS: "--settings .m2/settings.xml --batch-mode"
+  MAVEN_USER:  ${{ secrets.PACKAGE_USER }}
+  MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+          cache: 'maven'
+      - run: mvn --settings .m2/settings.xml --batch-mode compile
+
+  test:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+          cache: 'maven'
+      - run: mvn --settings .m2/settings.xml --batch-mode verify
+
+  deploy:
+    if: github.ref_name == 'main' && github.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    needs: [ build, test ]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+          architecture: 'x64'
+          cache: 'maven'
+      - name: Package JAR
+        run: mvn --settings .m2/settings.xml --batch-mode clean package -DskipTests
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to Docker
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_API_KEY }}
+      - name: Build and Push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{secrets.DOCKER_USER }}/nfl-stats-api:latest
+          platforms: linux/arm64, linux/amd64
