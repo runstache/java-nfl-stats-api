@@ -11,5 +11,8 @@ public class ErrorConstants {
 
   public static final String NO_POSITION_FOUND = "POSITION NOT FOUND";
 
+  public static final String NO_TYPE_CODE = "TYPE CODE NOT FOUND";
+
+  public static final String NO_TEAM_FOUND = "TEAM NOT FOUND";
 
 }
