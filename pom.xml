@@ -32,7 +32,7 @@
 		<dependency>
 			<groupId>com.lswebworld</groupId>
 			<artifactId>nfl-stats-data</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
