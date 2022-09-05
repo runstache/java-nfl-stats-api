@@ -17,6 +17,6 @@ public interface StatisticCodeRepository extends JpaRepository<StatisticCode, Lo
    * @param code Statistic Code
    * @return Statistic Code
    */
-  Optional<StatisticCode> findByCode(String code);
+  Optional<StatisticCode> findByCategoryIdAndCode(long categoryId, String code);
 
 }

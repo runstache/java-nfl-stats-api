@@ -66,18 +66,19 @@ public class StatisticsController {
     var stat = new Statistic();
     stat.setValue(model.getValue());
 
-    var statCode = statCodeRepo.findByCode(model.getStatisticCode());
-    if (statCode.isPresent()) {
-      stat.setStatisticCodeId(statCode.get().getId());
-    } else {
-      throw new StatisticProcessingFailure(ErrorConstants.NO_CODE_FOUND);
-    }
-
     var catCode = statCatRepo.findByCode(model.getCategoryCode());
     if (catCode.isPresent()) {
       stat.setCategoryId(catCode.get().getId());
     } else {
       throw new StatisticProcessingFailure(ErrorConstants.NO_CATEGORY_FOUND);
+    }
+
+    var statCode =
+            statCodeRepo.findByCategoryIdAndCode(catCode.get().getId(), model.getStatisticCode());
+    if (statCode.isPresent()) {
+      stat.setStatisticCodeId(statCode.get().getId());
+    } else {
+      throw new StatisticProcessingFailure(ErrorConstants.NO_CODE_FOUND);
     }
 
     hydrateContext(stat, model.getGameId(), model.getPlayerUrl(), model.getTeamCode());
