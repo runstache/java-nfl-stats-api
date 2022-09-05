@@ -118,7 +118,7 @@ class StatisticsControllerTest {
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
     when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
-    when(statCodeRepo.findByCategoryIdAndCode(anyLong(), anyString())).thenReturn(Optional.of(statCode));
+    when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
 
     var model = new StatisticModel();
     model.setGameId(12345L);
@@ -138,7 +138,7 @@ class StatisticsControllerTest {
     assertThat(captor.getValue()).extracting(Statistic::getStatisticCodeId).isEqualTo(1L);
     assertThat(captor.getValue()).extracting(Statistic::getCategoryId).isEqualTo(1);
     assertThat(captor.getValue()).extracting(Statistic::getPlayerId).isEqualTo(1L);
-    assertThat(captor.getValue()).extracting(Statistic::getTeamId).isEqualTo(0);
+    assertThat(captor.getValue()).extracting(Statistic::getTeamId).isNull();
 
   }
 
@@ -153,7 +153,7 @@ class StatisticsControllerTest {
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
     when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
-    when(statCodeRepo.findByCategoryIdAndCode(anyLong(), anyString())).thenReturn(Optional.of(statCode));
+    when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
 
     var model = new StatisticModel();
     model.setGameId(12345L);
@@ -171,7 +171,7 @@ class StatisticsControllerTest {
     assertThat(captor.getValue()).extracting(Statistic::getValue).isEqualTo(25.0);
     assertThat(captor.getValue()).extracting(Statistic::getStatisticCodeId).isEqualTo(1L);
     assertThat(captor.getValue()).extracting(Statistic::getCategoryId).isEqualTo(1);
-    assertThat(captor.getValue()).extracting(Statistic::getPlayerId).isEqualTo(0L);
+    assertThat(captor.getValue()).extracting(Statistic::getPlayerId).isNull();
     assertThat(captor.getValue()).extracting(Statistic::getTeamId).isEqualTo(1);
   }
 
@@ -186,7 +186,7 @@ class StatisticsControllerTest {
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
     when(teamRepo.findByCode(anyString())).thenReturn(Optional.empty());
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
-    when(statCodeRepo.findByCategoryIdAndCode(anyLong(), anyString())).thenReturn(Optional.of(statCode));
+    when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
 
     var model = new StatisticModel();
     model.setGameId(12345L);
@@ -214,7 +214,7 @@ class StatisticsControllerTest {
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
     when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.empty());
-    when(statCodeRepo.findByCategoryIdAndCode(anyLong(), anyString())).thenReturn(Optional.of(statCode));
+    when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
 
     var model = new StatisticModel();
     model.setGameId(12345L);
@@ -242,7 +242,7 @@ class StatisticsControllerTest {
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
     when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
-    when(statCodeRepo.findByCategoryIdAndCode(anyLong(), anyString())).thenReturn(Optional.of(statCode));
+    when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
 
     var model = new StatisticModel();
     model.setGameId(12345L);
@@ -270,7 +270,7 @@ class StatisticsControllerTest {
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
     when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
-    when(statCodeRepo.findByCategoryIdAndCode(anyLong(), anyString())).thenReturn(Optional.empty());
+    when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.empty());
 
     var model = new StatisticModel();
     model.setGameId(12345L);
@@ -297,7 +297,7 @@ class StatisticsControllerTest {
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
     when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.empty());
-    when(statCodeRepo.findByCategoryIdAndCode(anyLong(), anyString())).thenReturn(Optional.of(statCode));
+    when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
 
     var model = new StatisticModel();
     model.setGameId(12345L);
@@ -326,7 +326,7 @@ class StatisticsControllerTest {
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
     when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
-    when(statCodeRepo.findByCategoryIdAndCode(anyLong(), anyString())).thenReturn(Optional.of(statCode));
+    when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
 
     var model = new StatisticModel();
     model.setGameId(12345L);
@@ -355,7 +355,7 @@ class StatisticsControllerTest {
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
     when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
-    when(statCodeRepo.findByCategoryIdAndCode(anyLong(), anyString())).thenReturn(Optional.of(statCode));
+    when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
 
     var model = new StatisticModel();
     model.setGameId(12345L);

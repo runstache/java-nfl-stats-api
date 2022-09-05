@@ -32,7 +32,7 @@
 		<dependency>
 			<groupId>com.lswebworld</groupId>
 			<artifactId>nfl-stats-data</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<scope>test</scope>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 

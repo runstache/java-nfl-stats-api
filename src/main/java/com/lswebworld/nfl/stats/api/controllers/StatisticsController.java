@@ -10,6 +10,7 @@ import com.lswebworld.nfl.stats.api.repositories.StatisticsRepository;
 import com.lswebworld.nfl.stats.api.repositories.TeamRepository;
 import com.lswebworld.nfl.stats.data.dataobjects.Statistic;
 import com.lswebworld.nfl.stats.data.models.StatisticModel;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,7 +75,7 @@ public class StatisticsController {
     }
 
     var statCode =
-            statCodeRepo.findByCategoryIdAndCode(catCode.get().getId(), model.getStatisticCode());
+            statCodeRepo.findByCode(model.getStatisticCode());
     if (statCode.isPresent()) {
       stat.setStatisticCodeId(statCode.get().getId());
     } else {
@@ -124,7 +125,7 @@ public class StatisticsController {
   }
 
   private void hydrateStatistic(Statistic stat) {
-    if (stat.getPlayerId() > 0) {
+    if (ObjectUtils.isNotEmpty(stat.getPlayerId())) {
       var result =
               statsRepo.findByStatisticCodeIdAndCategoryIdAndScheduleIdAndPlayerId(
                       stat.getStatisticCodeId(),
@@ -133,7 +134,7 @@ public class StatisticsController {
                       stat.getPlayerId());
       result.ifPresent(s -> stat.setId(s.getId()));
     } else {
-      if (stat.getTeamId() > 0) {
+      if (ObjectUtils.isNotEmpty(stat.getTeamId())) {
         var result =
                 statsRepo.findByStatisticCodeIdAndCategoryIdAndScheduleIdAndTeamId(
                         stat.getStatisticCodeId(),
