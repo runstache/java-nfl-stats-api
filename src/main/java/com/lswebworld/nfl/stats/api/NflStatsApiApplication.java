@@ -1,4 +1,4 @@
-package com.lswebworld.nflstatsapi;
+package com.lswebworld.nfl.stats.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
