@@ -17,9 +17,19 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
   /**
    * Retrieves a Schedule based on the Game id and Team id.
    *
-   * @param gameId Game Id
-   * @param teamId Team Id
+   * @param gameId GameId
+   * @param teamId TeamId
    * @return Schedule
    */
   Optional<Schedule> findByGameIdAndTeamId(long gameId, int teamId);
+
+  /**
+   * Retrieves Schedule Entries by the Week, Year and Type.
+   *
+   * @param week Week Number
+   * @param year Year Number
+   * @param typeId TypeId
+   * @return List of Schedule Entries
+   */
+  List<Schedule> findAllByWeekAndYearAndTypeId(int week, int year, int typeId);
 }

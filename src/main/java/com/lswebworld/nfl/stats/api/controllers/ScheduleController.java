@@ -7,7 +7,11 @@ import com.lswebworld.nfl.stats.api.repositories.TeamRepository;
 import com.lswebworld.nfl.stats.api.repositories.TypeCodeRepository;
 import com.lswebworld.nfl.stats.data.dataobjects.Schedule;
 import com.lswebworld.nfl.stats.data.models.ScheduleModel;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +32,7 @@ public class ScheduleController {
    *
    * @param scheduleRepo Schedule Repository
    * @param teamRepo Team repository
-   * @param typeRepo Type Respository
+   * @param typeRepo Type Repository
    */
   @Autowired
   public ScheduleController(ScheduleRepository scheduleRepo,
@@ -37,6 +41,29 @@ public class ScheduleController {
     this.scheduleRepo = scheduleRepo;
     this.teamRepo = teamRepo;
     this.typeRepo = typeRepo;
+  }
+
+  /**
+   * Retrieves the Schedules based on Week, Year and Type.
+   *
+   * @param params Parameters
+   * @return List of Schedules
+   */
+  @GetMapping("/api/schedules")
+  public List<Schedule> getSchedules(Map<String, String> params) {
+
+    if (params.containsKey("typeCode")
+            && params.containsKey("week")
+            && params.containsKey("year")) {
+      var typeCode = typeRepo.findByCode(params.get("typeCode"));
+      if (typeCode.isPresent()) {
+        return scheduleRepo.findAllByWeekAndYearAndTypeId(
+                Integer.parseInt(params.get("week")),
+                Integer.parseInt(params.get("week")),
+                typeCode.get().getId());
+      }
+    }
+    return Collections.emptyList();
   }
 
   /**

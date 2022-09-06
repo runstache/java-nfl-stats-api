@@ -18,6 +18,9 @@ import com.lswebworld.nfl.stats.data.dataobjects.Schedule;
 import com.lswebworld.nfl.stats.data.dataobjects.Team;
 import com.lswebworld.nfl.stats.data.dataobjects.TypeCode;
 import com.lswebworld.nfl.stats.data.models.ScheduleModel;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -228,5 +231,41 @@ class ScheduleControllerTest {
             .isNotNull()
             .extracting(Schedule::getId)
             .isEqualTo(25L);
+  }
+
+  @Test
+  void testGetSchedules() {
+    Map<String, String> params = new HashMap<>();
+    params.put("typeCode", "2");
+    params.put("week", "1");
+    params.put("year", "2020");
+
+    when(typeRepo.findByCode(anyString())).thenReturn(Optional.of(typeCode));
+    when(scheduleRepo.findAllByWeekAndYearAndTypeId(anyInt(), anyInt(), anyInt()))
+            .thenReturn(Collections.singletonList(schedule));
+
+    var controller = new ScheduleController(scheduleRepo, teamRepo, typeRepo);
+
+    var result = controller.getSchedules(params);
+
+    assertThat(result).isNotEmpty().contains(schedule);
+  }
+
+  @Test
+  void testGetSchedulesNoResult() {
+    Map<String, String> params = new HashMap<>();
+    params.put("typeCode", "2");
+    params.put("week", "1");
+    params.put("year", "2020");
+
+    when(typeRepo.findByCode(anyString())).thenReturn(Optional.of(typeCode));
+    when(scheduleRepo.findAllByWeekAndYearAndTypeId(anyInt(), anyInt(), anyInt()))
+            .thenReturn(Collections.emptyList());
+
+    var controller = new ScheduleController(scheduleRepo, teamRepo, typeRepo);
+
+    var result = controller.getSchedules(params);
+
+    assertThat(result).isEmpty();
   }
 }
