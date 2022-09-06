@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -50,7 +51,7 @@ public class ScheduleController {
    * @return List of Schedules
    */
   @GetMapping("/api/schedules")
-  public List<Schedule> getSchedules(Map<String, String> params) {
+  public List<Schedule> getSchedules(@RequestParam Map<String, String> params) {
 
     if (params.containsKey("typeCode")
             && params.containsKey("week")
