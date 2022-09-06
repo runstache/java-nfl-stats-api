@@ -82,7 +82,16 @@ public class StatisticsController {
       throw new StatisticProcessingFailure(ErrorConstants.NO_CODE_FOUND);
     }
 
-    hydrateContext(stat, model.getGameId(), model.getPlayerUrl(), model.getTeamCode());
+    if (model.getScheduleId() > 0) {
+      stat.setScheduleId(model.getScheduleId());
+      if (StringUtils.isNotEmpty(model.getPlayerUrl())) {
+        hydratePlayer(stat, model.getPlayerUrl());
+      } else {
+        stat.setTeamId(model.getTeamId());
+      }
+    } else {
+      hydrateContext(stat, model.getGameId(), model.getPlayerUrl(), model.getTeamCode());
+    }
     hydrateStatistic(stat);
     statsRepo.save(stat);
   }
@@ -106,12 +115,16 @@ public class StatisticsController {
     }
 
     if (StringUtils.isNotEmpty(playerUrl)) {
-      var player = playerRepo.findByUrl(playerUrl);
-      if (player.isPresent()) {
-        stat.setPlayerId(player.get().getId());
-      } else {
-        throw new StatisticProcessingFailure(ErrorConstants.NO_PLAYER_FOUND);
-      }
+      hydratePlayer(stat, playerUrl);
+    }
+  }
+
+  private void hydratePlayer(Statistic stat, String playerUrl) {
+    var player = playerRepo.findByUrl(playerUrl);
+    if (player.isPresent()) {
+      stat.setPlayerId(player.get().getId());
+    } else {
+      throw new StatisticProcessingFailure(ErrorConstants.NO_PLAYER_FOUND);
     }
   }
 

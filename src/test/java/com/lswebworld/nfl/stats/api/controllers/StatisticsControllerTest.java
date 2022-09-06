@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -368,6 +369,81 @@ class StatisticsControllerTest {
     assertThatThrownBy(() -> controller.post(model))
             .isInstanceOf(StatisticProcessingFailure.class)
             .hasMessage(ErrorConstants.MISSING_STAT_CONTEXT);
+  }
+
+  @Test
+  void testPostStatTeamIdScheduleId() {
+    when(statsRepo.findByStatisticCodeIdAndCategoryIdAndScheduleIdAndPlayerId(anyLong(), anyInt(), anyLong(), anyLong()))
+            .thenReturn(Optional.empty());
+    when(statsRepo.findByStatisticCodeIdAndCategoryIdAndScheduleIdAndTeamId(anyLong(), anyInt(),anyLong(), anyInt()))
+            .thenReturn(Optional.empty());
+
+    when(statCatRepo.findByCode(anyString())).thenReturn(Optional.of(statCategory));
+    when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
+    when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
+
+    var model = new StatisticModel();
+    model.setScheduleId(1);
+    model.setStatisticCode("PAVG");
+    model.setCategoryCode("O");
+    model.setValue(25.0);
+    model.setGameId(12345L);
+    model.setTeamId(1);
+
+    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, teamRepo, statCatRepo, statCodeRepo);
+    controller.post(model);
+
+    verify(statsRepo).save(captor.capture());
+    verify(scheduleRepo, never()).findByGameIdAndTeamId(anyLong(), anyInt());
+    verify(teamRepo, never()).findByCode(anyString());
+
+    assertThat(captor.getValue())
+            .isNotNull()
+            .extracting(Statistic::getTeamId)
+            .isEqualTo(1);
+    assertThat(captor.getValue())
+            .isNotNull()
+            .extracting(Statistic::getScheduleId)
+            .isEqualTo(1L);
+  }
+
+  @Test
+  void testPostPlayerStatTeamIdScheduleId() {
+    when(statsRepo.findByStatisticCodeIdAndCategoryIdAndScheduleIdAndPlayerId(anyLong(), anyInt(), anyLong(), anyLong()))
+            .thenReturn(Optional.empty());
+    when(statsRepo.findByStatisticCodeIdAndCategoryIdAndScheduleIdAndTeamId(anyLong(), anyInt(),anyLong(), anyInt()))
+            .thenReturn(Optional.empty());
+
+    when(statCatRepo.findByCode(anyString())).thenReturn(Optional.of(statCategory));
+    when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
+    when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
+
+    var model = new StatisticModel();
+    model.setScheduleId(1);
+    model.setStatisticCode("PAVG");
+    model.setCategoryCode("O");
+    model.setValue(25.0);
+    model.setPlayerUrl("www.google.com");
+    model.setGameId(12345L);
+    model.setTeamId(1);
+
+    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, teamRepo, statCatRepo, statCodeRepo);
+    controller.post(model);
+
+    verify(statsRepo).save(captor.capture());
+    verify(scheduleRepo, never()).findByGameIdAndTeamId(anyLong(), anyInt());
+    verify(teamRepo, never()).findByCode(anyString());
+
+    assertThat(captor.getValue())
+            .isNotNull()
+            .extracting(Statistic::getScheduleId)
+            .isEqualTo(1L);
+    assertThat(captor.getValue())
+            .extracting(Statistic::getPlayerId)
+            .isEqualTo(1L);
+    assertThat(captor.getValue())
+            .extracting(Statistic::getTeamId)
+            .isNull();
   }
 
 }
