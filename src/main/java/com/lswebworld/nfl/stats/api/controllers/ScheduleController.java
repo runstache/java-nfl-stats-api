@@ -54,8 +54,8 @@ public class ScheduleController {
     schedule.setHomeGame(model.isHomeGame());
     schedule.setGameId(model.getGameId());
 
-    var opponent = teamRepo.findByCode(model.getOpponentCode());
-    var team = teamRepo.findByCode(model.getTeamCode());
+    var opponent = teamRepo.findByUrl(model.getOpponentUrl());
+    var team = teamRepo.findByUrl(model.getTeamUrl());
     if (team.isPresent() && opponent.isPresent()) {
       schedule.setTeamId(team.get().getId());
       schedule.setOpponentId(opponent.get().getId());

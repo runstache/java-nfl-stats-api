@@ -82,8 +82,8 @@ class ScheduleControllerTest {
   void testPostSchedule() {
 
     when(typeRepo.findByCode(anyString())).thenReturn(Optional.of(typeCode));
-    when(teamRepo.findByCode("WSH")).thenReturn(Optional.of(team));
-    when(teamRepo.findByCode("OAK")).thenReturn(Optional.of(opponent));
+    when(teamRepo.findByUrl("WSH")).thenReturn(Optional.of(team));
+    when(teamRepo.findByUrl("OAK")).thenReturn(Optional.of(opponent));
 
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.empty());
 
@@ -93,9 +93,8 @@ class ScheduleControllerTest {
     model.setHomeGame(false);
     model.setWeek(1);
     model.setYear(2022);
-    model.setOpponentCode("WSH");
-    model.setTeamCode("WSH");
-    model.setOpponentCode("OAK");
+    model.setTeamUrl("WSH");
+    model.setOpponentUrl("OAK");
     model.setTypeCode("R");
 
 
@@ -132,8 +131,8 @@ class ScheduleControllerTest {
   void testNoTypeCode() {
     when(typeRepo.findByCode(anyString())).thenReturn(Optional.empty());
 
-    when(teamRepo.findByCode("WSH")).thenReturn(Optional.of(team));
-    when(teamRepo.findByCode("OAK")).thenReturn(Optional.of(opponent));
+    when(teamRepo.findByUrl("WSH")).thenReturn(Optional.of(team));
+    when(teamRepo.findByUrl("OAK")).thenReturn(Optional.of(opponent));
 
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.empty());
 
@@ -143,9 +142,8 @@ class ScheduleControllerTest {
     model.setHomeGame(false);
     model.setWeek(1);
     model.setYear(2022);
-    model.setOpponentCode("WSH");
-    model.setTeamCode("WSH");
-    model.setOpponentCode("OAK");
+    model.setTeamUrl("WSH");
+    model.setOpponentUrl("OAK");
     model.setTypeCode("R");
 
     var controller = new ScheduleController(scheduleRepo, teamRepo, typeRepo);
@@ -158,8 +156,8 @@ class ScheduleControllerTest {
   void testNoTeamReturned() {
     when(typeRepo.findByCode(anyString())).thenReturn(Optional.of(typeCode));
 
-    when(teamRepo.findByCode("WSH")).thenReturn(Optional.empty());
-    when(teamRepo.findByCode("OAK")).thenReturn(Optional.of(opponent));
+    when(teamRepo.findByUrl("WSH")).thenReturn(Optional.empty());
+    when(teamRepo.findByUrl("OAK")).thenReturn(Optional.of(opponent));
 
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.empty());
 
@@ -169,9 +167,8 @@ class ScheduleControllerTest {
     model.setHomeGame(false);
     model.setWeek(1);
     model.setYear(2022);
-    model.setOpponentCode("WSH");
-    model.setTeamCode("WSH");
-    model.setOpponentCode("OAK");
+    model.setTeamUrl("WSH");
+    model.setOpponentUrl("OAK");
     model.setTypeCode("R");
 
     var controller = new ScheduleController(scheduleRepo, teamRepo, typeRepo);
@@ -184,8 +181,8 @@ class ScheduleControllerTest {
   void testNoOpponentReturned() {
     when(typeRepo.findByCode(anyString())).thenReturn(Optional.of(typeCode));
 
-    when(teamRepo.findByCode("WSH")).thenReturn(Optional.of(team));
-    when(teamRepo.findByCode("OAK")).thenReturn(Optional.empty());
+    when(teamRepo.findByUrl("WSH")).thenReturn(Optional.of(team));
+    when(teamRepo.findByUrl("OAK")).thenReturn(Optional.empty());
 
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.empty());
 
@@ -195,9 +192,8 @@ class ScheduleControllerTest {
     model.setHomeGame(false);
     model.setWeek(1);
     model.setYear(2022);
-    model.setOpponentCode("WSH");
-    model.setTeamCode("WSH");
-    model.setOpponentCode("OAK");
+    model.setTeamUrl("WSH");
+    model.setOpponentUrl("OAK");
     model.setTypeCode("R");
 
     var controller = new ScheduleController(scheduleRepo, teamRepo, typeRepo);
@@ -209,8 +205,8 @@ class ScheduleControllerTest {
   @Test
   void testScheduleExists() {
     when(typeRepo.findByCode(anyString())).thenReturn(Optional.of(typeCode));
-    when(teamRepo.findByCode("WSH")).thenReturn(Optional.of(team));
-    when(teamRepo.findByCode("OAK")).thenReturn(Optional.of(opponent));
+    when(teamRepo.findByUrl("WSH")).thenReturn(Optional.of(team));
+    when(teamRepo.findByUrl("OAK")).thenReturn(Optional.of(opponent));
 
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
 
@@ -220,9 +216,8 @@ class ScheduleControllerTest {
     model.setHomeGame(false);
     model.setWeek(1);
     model.setYear(2022);
-    model.setOpponentCode("WSH");
-    model.setTeamCode("WSH");
-    model.setOpponentCode("OAK");
+    model.setTeamUrl("WSH");
+    model.setOpponentUrl("OAK");
     model.setTypeCode("R");
 
     var controller = new ScheduleController(scheduleRepo, teamRepo, typeRepo);
