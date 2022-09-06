@@ -59,7 +59,7 @@ public class ScheduleController {
       if (typeCode.isPresent()) {
         return scheduleRepo.findAllByWeekAndYearAndTypeId(
                 Integer.parseInt(params.get("week")),
-                Integer.parseInt(params.get("week")),
+                Integer.parseInt(params.get("year")),
                 typeCode.get().getId());
       }
     }
