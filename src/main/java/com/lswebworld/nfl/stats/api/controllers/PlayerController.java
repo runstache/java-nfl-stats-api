@@ -41,7 +41,6 @@ public class PlayerController {
     if (position.isPresent()) {
 
       var player = new Player();
-      player.setDob(model.getDob());
       player.setName(model.getName());
       player.setUrl(model.getUrl());
       player.setPositionId(position.get().getId());
@@ -57,7 +56,7 @@ public class PlayerController {
   }
 
   /**
-   * Retrieves the Id from the Database if it exists.
+   * Retrieves the id from the Database if it exists.
    *
    * @param player Player
    */

@@ -14,7 +14,6 @@ import com.lswebworld.nfl.stats.api.repositories.PositionCodeRepository;
 import com.lswebworld.nfl.stats.data.dataobjects.Player;
 import com.lswebworld.nfl.stats.data.dataobjects.PositionCode;
 import com.lswebworld.nfl.stats.data.models.PlayerModel;
-import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,7 +53,6 @@ class PlayerControllerTest {
     var controller = new PlayerController(playerRepo, positionRepo);
 
     var model = new PlayerModel();
-    model.setDob(LocalDate.of(2010, 5,1));
     model.setName("Jim Smith");
     model.setUrl("www.google.com");
     model.setPositionCode("QB");
@@ -65,10 +63,6 @@ class PlayerControllerTest {
 
     assertThat(captor.getValue()).isNotNull();
 
-    assertThat(captor.getValue())
-            .extracting(Player::getDob)
-            .isNotNull()
-            .isEqualTo(LocalDate.of(2010, 5,1));
     assertThat(captor.getValue())
             .extracting(Player::getName)
             .isNotNull()
@@ -90,7 +84,6 @@ class PlayerControllerTest {
     var controller = new PlayerController(playerRepo, positionRepo);
 
     var model = new PlayerModel();
-    model.setDob(LocalDate.of(2010, 5,1));
     model.setName("Jim Smith");
     model.setUrl("www.google.com");
     model.setPositionCode("QB");
@@ -105,11 +98,9 @@ class PlayerControllerTest {
   void testPlayerExists() {
     when(positionRepo.findByCode(anyString())).thenReturn(Optional.of(code));
 
-
     var controller = new PlayerController(playerRepo, positionRepo);
 
     var model = new PlayerModel();
-    model.setDob(LocalDate.of(2010, 5,1));
     model.setName("Jim Smith");
     model.setUrl("www.google.com");
     model.setPositionCode("QB");
@@ -119,7 +110,6 @@ class PlayerControllerTest {
     response.setUrl("www.google.com");
     response.setName("Jim Smith");
     response.setId(25L);
-    response.setDob(LocalDate.of(2010,5,1));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(response));
     controller.post(model);
 
@@ -127,10 +117,6 @@ class PlayerControllerTest {
 
     assertThat(captor.getValue()).isNotNull();
 
-    assertThat(captor.getValue())
-            .extracting(Player::getDob)
-            .isNotNull()
-            .isEqualTo(LocalDate.of(2010, 5,1));
     assertThat(captor.getValue())
             .extracting(Player::getName)
             .isNotNull()

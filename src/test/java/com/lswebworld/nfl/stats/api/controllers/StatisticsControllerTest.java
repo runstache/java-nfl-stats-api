@@ -26,7 +26,6 @@ import com.lswebworld.nfl.stats.data.dataobjects.StatisticCategory;
 import com.lswebworld.nfl.stats.data.dataobjects.StatisticCode;
 import com.lswebworld.nfl.stats.data.dataobjects.Team;
 import com.lswebworld.nfl.stats.data.models.StatisticModel;
-import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,7 +70,6 @@ class StatisticsControllerTest {
 
     player = new Player();
     player.setId(1);
-    player.setDob(LocalDate.of(2010, 5,1));
     player.setName("Jim Smith");
     player.setUrl("www.google.com");
     player.setPositionId(1);
