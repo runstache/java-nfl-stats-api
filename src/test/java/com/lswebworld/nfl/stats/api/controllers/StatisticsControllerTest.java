@@ -18,13 +18,11 @@ import com.lswebworld.nfl.stats.api.repositories.ScheduleRepository;
 import com.lswebworld.nfl.stats.api.repositories.StatisticCategoryRepository;
 import com.lswebworld.nfl.stats.api.repositories.StatisticCodeRepository;
 import com.lswebworld.nfl.stats.api.repositories.StatisticsRepository;
-import com.lswebworld.nfl.stats.api.repositories.TeamRepository;
 import com.lswebworld.nfl.stats.data.dataobjects.Player;
 import com.lswebworld.nfl.stats.data.dataobjects.Schedule;
 import com.lswebworld.nfl.stats.data.dataobjects.Statistic;
 import com.lswebworld.nfl.stats.data.dataobjects.StatisticCategory;
 import com.lswebworld.nfl.stats.data.dataobjects.StatisticCode;
-import com.lswebworld.nfl.stats.data.dataobjects.Team;
 import com.lswebworld.nfl.stats.data.models.StatisticModel;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +33,6 @@ import org.mockito.MockitoAnnotations;
 
 class StatisticsControllerTest {
 
-  private Team team;
   private Player player;
   private StatisticCode statCode;
   private StatisticCategory statCategory;
@@ -48,7 +45,6 @@ class StatisticsControllerTest {
   private StatisticCodeRepository statCodeRepo;
   private ScheduleRepository scheduleRepo;
   private PlayerRepository playerRepo;
-  private TeamRepository teamRepo;
 
   @Captor
   ArgumentCaptor<Statistic> captor;
@@ -60,13 +56,6 @@ class StatisticsControllerTest {
     statCodeRepo = mock(StatisticCodeRepository.class);
     scheduleRepo = mock(ScheduleRepository.class);
     playerRepo = mock(PlayerRepository.class);
-    teamRepo = mock(TeamRepository.class);
-
-    team = new Team();
-    team.setId(1);
-    team.setCode("PIT");
-    team.setUrl("www.steelers.com");
-    team.setName("Pittsburgh Steelers");
 
     player = new Player();
     player.setId(1);
@@ -115,7 +104,6 @@ class StatisticsControllerTest {
 
     when(statCatRepo.findByCode(anyString())).thenReturn(Optional.of(statCategory));
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
-    when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
     when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
 
@@ -125,9 +113,9 @@ class StatisticsControllerTest {
     model.setCategoryCode("O");
     model.setValue(25.0);
     model.setPlayerUrl("www.google.com");
-    model.setTeamCode("PIT");
+    model.setTeamId((1));
 
-    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, teamRepo, statCatRepo, statCodeRepo);
+    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, statCatRepo, statCodeRepo);
     controller.post(model);
 
     verify(statsRepo).save(captor.capture());
@@ -150,7 +138,6 @@ class StatisticsControllerTest {
 
     when(statCatRepo.findByCode(anyString())).thenReturn(Optional.of(statCategory));
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
-    when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
     when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
 
@@ -159,9 +146,9 @@ class StatisticsControllerTest {
     model.setStatisticCode("PAVG");
     model.setCategoryCode("O");
     model.setValue(25.0);
-    model.setTeamCode("PIT");
+    model.setTeamId(1);
 
-    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, teamRepo, statCatRepo, statCodeRepo);
+    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, statCatRepo, statCodeRepo);
     controller.post(model);
 
     verify(statsRepo).save(captor.capture());
@@ -175,33 +162,6 @@ class StatisticsControllerTest {
   }
 
   @Test
-  void testNoTeamFound() {
-    when(statsRepo.findByStatisticCodeIdAndCategoryIdAndScheduleIdAndPlayerId(anyLong(), anyInt(), anyLong(), anyLong()))
-            .thenReturn(Optional.empty());
-    when(statsRepo.findByStatisticCodeIdAndCategoryIdAndScheduleIdAndTeamId(anyLong(), anyInt(),anyLong(), anyInt()))
-            .thenReturn(Optional.empty());
-
-    when(statCatRepo.findByCode(anyString())).thenReturn(Optional.of(statCategory));
-    when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
-    when(teamRepo.findByCode(anyString())).thenReturn(Optional.empty());
-    when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
-    when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
-
-    var model = new StatisticModel();
-    model.setGameId(12345L);
-    model.setStatisticCode("PAVG");
-    model.setCategoryCode("O");
-    model.setValue(25.0);
-    model.setTeamCode("PIT");
-
-    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, teamRepo, statCatRepo, statCodeRepo);
-
-    assertThatThrownBy(() -> controller.post(model))
-            .isInstanceOf(StatisticProcessingFailure.class)
-            .hasMessage(ErrorConstants.NO_TEAM_FOUND);
-  }
-
-  @Test
   void testNoPlayerFound() {
 
     when(statsRepo.findByStatisticCodeIdAndCategoryIdAndScheduleIdAndPlayerId(anyLong(), anyInt(), anyLong(), anyLong()))
@@ -211,7 +171,6 @@ class StatisticsControllerTest {
 
     when(statCatRepo.findByCode(anyString())).thenReturn(Optional.of(statCategory));
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
-    when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.empty());
     when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
 
@@ -220,10 +179,10 @@ class StatisticsControllerTest {
     model.setStatisticCode("PAVG");
     model.setCategoryCode("O");
     model.setValue(25.0);
-    model.setTeamCode("PIT");
+    model.setTeamId(1);
     model.setPlayerUrl("www.google.com");
 
-    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, teamRepo, statCatRepo, statCodeRepo);
+    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, statCatRepo, statCodeRepo);
 
     assertThatThrownBy(() -> controller.post(model))
             .isInstanceOf(StatisticProcessingFailure.class)
@@ -239,7 +198,6 @@ class StatisticsControllerTest {
 
     when(statCatRepo.findByCode(anyString())).thenReturn(Optional.empty());
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
-    when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
     when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
 
@@ -248,9 +206,9 @@ class StatisticsControllerTest {
     model.setStatisticCode("PAVG");
     model.setCategoryCode("O");
     model.setValue(25.0);
-    model.setTeamCode("PIT");
+    model.setTeamId(1);
 
-    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, teamRepo, statCatRepo, statCodeRepo);
+    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, statCatRepo, statCodeRepo);
 
     assertThatThrownBy(() -> controller.post(model))
             .isInstanceOf(StatisticProcessingFailure.class)
@@ -267,7 +225,6 @@ class StatisticsControllerTest {
 
     when(statCatRepo.findByCode(anyString())).thenReturn(Optional.of(statCategory));
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
-    when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
     when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.empty());
 
@@ -276,9 +233,9 @@ class StatisticsControllerTest {
     model.setStatisticCode("PAVG");
     model.setCategoryCode("O");
     model.setValue(25.0);
-    model.setTeamCode("PIT");
+    model.setTeamId(1);
 
-    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, teamRepo, statCatRepo, statCodeRepo);
+    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, statCatRepo, statCodeRepo);
 
     assertThatThrownBy(() -> controller.post(model))
             .isInstanceOf(StatisticProcessingFailure.class)
@@ -294,7 +251,6 @@ class StatisticsControllerTest {
 
     when(statCatRepo.findByCode(anyString())).thenReturn(Optional.of(statCategory));
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
-    when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.empty());
     when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
 
@@ -303,10 +259,10 @@ class StatisticsControllerTest {
     model.setStatisticCode("PAVG");
     model.setCategoryCode("O");
     model.setValue(25.0);
-    model.setTeamCode("PIT");
+    model.setTeamId(1);
 
 
-    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, teamRepo, statCatRepo, statCodeRepo);
+    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, statCatRepo, statCodeRepo);
     controller.post(model);
 
     verify(statsRepo).save(captor.capture());
@@ -323,7 +279,6 @@ class StatisticsControllerTest {
 
     when(statCatRepo.findByCode(anyString())).thenReturn(Optional.of(statCategory));
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
-    when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
     when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
 
@@ -333,9 +288,9 @@ class StatisticsControllerTest {
     model.setCategoryCode("O");
     model.setValue(25.0);
     model.setPlayerUrl("www.google.com");
-    model.setTeamCode("PIT");
+    model.setTeamId(1);
 
-    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, teamRepo, statCatRepo, statCodeRepo);
+    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, statCatRepo, statCodeRepo);
     controller.post(model);
 
     verify(statsRepo).save(captor.capture());
@@ -352,7 +307,6 @@ class StatisticsControllerTest {
 
     when(statCatRepo.findByCode(anyString())).thenReturn(Optional.of(statCategory));
     when(scheduleRepo.findByGameIdAndTeamId(anyLong(), anyInt())).thenReturn(Optional.of(schedule));
-    when(teamRepo.findByCode(anyString())).thenReturn(Optional.of(team));
     when(playerRepo.findByUrl(anyString())).thenReturn(Optional.of(player));
     when(statCodeRepo.findByCode(anyString())).thenReturn(Optional.of(statCode));
 
@@ -362,7 +316,7 @@ class StatisticsControllerTest {
     model.setCategoryCode("O");
     model.setValue(25.0);
 
-    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, teamRepo, statCatRepo, statCodeRepo);
+    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, statCatRepo, statCodeRepo);
 
     assertThatThrownBy(() -> controller.post(model))
             .isInstanceOf(StatisticProcessingFailure.class)
@@ -388,12 +342,11 @@ class StatisticsControllerTest {
     model.setGameId(12345L);
     model.setTeamId(1);
 
-    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, teamRepo, statCatRepo, statCodeRepo);
+    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, statCatRepo, statCodeRepo);
     controller.post(model);
 
     verify(statsRepo).save(captor.capture());
     verify(scheduleRepo, never()).findByGameIdAndTeamId(anyLong(), anyInt());
-    verify(teamRepo, never()).findByCode(anyString());
 
     assertThat(captor.getValue())
             .isNotNull()
@@ -425,12 +378,11 @@ class StatisticsControllerTest {
     model.setGameId(12345L);
     model.setTeamId(1);
 
-    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, teamRepo, statCatRepo, statCodeRepo);
+    var controller = new StatisticsController(statsRepo, playerRepo, scheduleRepo, statCatRepo, statCodeRepo);
     controller.post(model);
 
     verify(statsRepo).save(captor.capture());
     verify(scheduleRepo, never()).findByGameIdAndTeamId(anyLong(), anyInt());
-    verify(teamRepo, never()).findByCode(anyString());
 
     assertThat(captor.getValue())
             .isNotNull()

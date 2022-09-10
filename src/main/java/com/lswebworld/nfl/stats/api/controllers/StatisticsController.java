@@ -7,7 +7,6 @@ import com.lswebworld.nfl.stats.api.repositories.ScheduleRepository;
 import com.lswebworld.nfl.stats.api.repositories.StatisticCategoryRepository;
 import com.lswebworld.nfl.stats.api.repositories.StatisticCodeRepository;
 import com.lswebworld.nfl.stats.api.repositories.StatisticsRepository;
-import com.lswebworld.nfl.stats.api.repositories.TeamRepository;
 import com.lswebworld.nfl.stats.data.dataobjects.Statistic;
 import com.lswebworld.nfl.stats.data.models.StatisticModel;
 import org.apache.commons.lang3.ObjectUtils;
@@ -29,7 +28,6 @@ public class StatisticsController {
   private final StatisticCodeRepository statCodeRepo;
   private final ScheduleRepository scheduleRepo;
   private final PlayerRepository playerRepo;
-  private final TeamRepository teamRepo;
 
   /**
    * Controller Constructor.
@@ -37,7 +35,6 @@ public class StatisticsController {
    * @param statsRepo Statistics Repository
    * @param playerRepo Player Repository
    * @param scheduleRepo Schedule Repository
-   * @param teamRepo Team Repository
    * @param statsCatRepo Stats Category Repository
    * @param statsCodeRepo Stats Code Repository
    */
@@ -45,13 +42,11 @@ public class StatisticsController {
   public StatisticsController(StatisticsRepository statsRepo,
                               PlayerRepository playerRepo,
                               ScheduleRepository scheduleRepo,
-                              TeamRepository teamRepo,
                               StatisticCategoryRepository statsCatRepo,
                               StatisticCodeRepository statsCodeRepo) {
     this.statsRepo = statsRepo;
     this.scheduleRepo = scheduleRepo;
     this.playerRepo = playerRepo;
-    this.teamRepo = teamRepo;
     this.statCatRepo = statsCatRepo;
     this.statCodeRepo = statsCodeRepo;
   }
@@ -90,28 +85,21 @@ public class StatisticsController {
         stat.setTeamId(model.getTeamId());
       }
     } else {
-      hydrateContext(stat, model.getGameId(), model.getPlayerUrl(), model.getTeamCode());
+      hydrateContext(stat, model.getGameId(), model.getPlayerUrl(), model.getTeamId());
     }
     hydrateStatistic(stat);
     statsRepo.save(stat);
   }
 
-  private void hydrateContext(Statistic stat, long gameId, String playerUrl, String teamCode) {
+  private void hydrateContext(Statistic stat, long gameId, String playerUrl, int teamId) {
 
-    if (StringUtils.isAllEmpty(playerUrl, teamCode)) {
+    if (StringUtils.isAllEmpty(playerUrl) && teamId == 0) {
       throw new StatisticProcessingFailure(ErrorConstants.MISSING_STAT_CONTEXT);
     }
+    hydrateSchedule(stat, gameId, teamId);
 
-    var team = teamRepo.findByCode(teamCode);
-
-    if (team.isPresent()) {
-      hydrateSchedule(stat, gameId, team.get().getId());
-
-      if (StringUtils.isEmpty(playerUrl)) {
-        stat.setTeamId(team.get().getId());
-      }
-    } else {
-      throw new StatisticProcessingFailure(ErrorConstants.NO_TEAM_FOUND);
+    if (StringUtils.isEmpty(playerUrl)) {
+      stat.setTeamId(teamId);
     }
 
     if (StringUtils.isNotEmpty(playerUrl)) {
